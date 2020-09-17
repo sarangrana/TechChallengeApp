@@ -24,11 +24,12 @@ RUN swagger generate spec -o /swagger.json \
 
 RUN cd ui && rice append --exec /TechChallengeApp
 
-FROM alpine:latest
+FROM scratch
 
 WORKDIR /TechChallengeApp
 
 COPY conf.toml ./conf.toml
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /TechChallengeApp TechChallengeApp
 
 ENTRYPOINT [ "./TechChallengeApp" ]
