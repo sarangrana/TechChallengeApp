@@ -11,14 +11,14 @@ pipeline {
   agent any
 parameters {
         choice(
-            choices: ['Select', 'Build-Infra' , 'Deployment'],
+            choices: ['Select', 'BuildInfra' , 'Deployment'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
   stages {
   stage('Pre-Requisits') {
     when {
-                expression { params.REQUESTED_ACTION == 'Build-Infra' }
+                expression { params.REQUESTED_ACTION == 'BuildInfra' }
     }
     steps {
          sh '''#!/bin/bash
@@ -32,44 +32,51 @@ parameters {
          '''
       }
     }
-  stage('Terraform Initialize') {
+  // stage('Terraform Initialize') {
+  //   when {
+  //               expression { params.REQUESTED_ACTION == 'BuildInfra' }
+  //   }     
+  //   steps{
+  //       script {
+  //                sh "ls -la"
+  //                sh "pwd"
+  //                dir('terraform') {
+  //                   sh "terraform init"
+  //                }
+  //       }
+  //     }
+  //   }
+  // stage('Terraform Plan') {
+  //   when {
+  //               expression { params.REQUESTED_ACTION == 'BuildInfra' }
+  //   }  
+  //   steps{
+  //       dir('terraform') {
+  //        sh "terraform plan"
+  //       }
+  //     }
+  //   }
+  // stage('Terraform Apply') {
+  //   when {
+  //               expression { params.REQUESTED_ACTION == 'BuildInfra' }
+  //   }    
+  //   steps{
+  //       dir('terraform') {
+  //        sh "terraform apply -auto-approve"
+  //       }
+  //     }
+  //   }
+  stage('Terraform Destroy') {
     when {
-                expression { params.REQUESTED_ACTION == 'Build-Infra' }
-    }     
-    steps{
-        script {
-                 sh "ls -la"
-                 sh "pwd"
-                 dir('terraform') {
-                    sh "terraform init"
-                 }
-        }
-      }
-    }
-  stage('Terraform Plan') {
-    when {
-                expression { params.REQUESTED_ACTION == 'Build-Infra' }
-    }  
-    steps{
-        dir('terraform') {
-         sh "terraform plan"
-        }
-      }
-    }
-  stage('Terraform Apply') {
-    when {
-                expression { params.REQUESTED_ACTION == 'Build-Infra' }
+                expression { params.REQUESTED_ACTION == 'BuildInfra' }
     }    
     steps{
         dir('terraform') {
-         sh "terraform apply -auto-approve"
+         sh "terraform destroy -auto-approve"
         }
       }
     }
-   stage('Terraform Destroy') {
-    when {
-                expression { params.REQUESTED_ACTION == 'Build-Infra' }
-    }
+   stage('Build Go Application') {
     steps{
        script {
          sh '''
