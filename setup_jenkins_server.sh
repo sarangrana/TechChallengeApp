@@ -7,4 +7,5 @@ sudo systemctl start jenkins
 systemctl status jenkins
 sudo systemctl enable jenkins
 
-#Setup Jenkins server's further steps as per https://linuxize.com/post/how-to-install-jenkins-on-centos-7/#setting-up-jenkins
+# Setup Jenkins server's further steps as per https://linuxize.com/post/how-to-install-jenkins-on-centos-7/#setting-up-jenkins
+# Add jenkins ALL=(ALL) NOPASSWD: ALL to /etc/sudoers, so when you become sudo and run any commands it will not ask for password.
