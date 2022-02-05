@@ -7,7 +7,7 @@ sudo yum install docker -y
 sudo systemctl start docker
 sudo systemctl status docker
 sudo systemctl enable docker
-docker version
+docker --version
 
 #Install Terraform
 sudo yum install -y yum-utils
