@@ -91,11 +91,13 @@ parameters {
    stage('Docker Build, Tag & Push') {
       steps{
        script {
-         sh '''
-         docker login -u="${registryCredential.username}" -p="${registryCredential.password}"
-         docker build . -t {$DOCKER_REGISTRY}/techchallengeapp:latest
-         docker push {$DOCKER_REGISTRY}/techchallengeapp:latest
-         '''
+        withCredentials([usernamePassword(credentialsId: 'registryCredential', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
+          sh '''
+          docker build . -t {$DOCKER_REGISTRY_USER}/techchallengeapp:latest
+          docker login -u="${DOCKER_REGISTRY_USER}" -p="${DOCKER_REGISTRY_PWD}"
+          docker push {$DOCKER_REGISTRY_USER}/techchallengeapp:latest
+          '''
+          }
         }
       }
     }
