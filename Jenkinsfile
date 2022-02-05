@@ -4,7 +4,8 @@ pipeline {
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
     imagename = '{$DOCKER_REGISTRY}/techchallengeapp:latest'
-    
+    registry = credentials('DOCKER_REGISTRY')
+    registryCredential = credentials('sarangrana-dockerhub-user-token')
     dockerImage = ''
   }
   agent any
@@ -90,20 +91,17 @@ parameters {
    stage('Docker Build, Tag & Push') {
       steps{
        script {
-        withCredentials([usernamePassword(credentialsId: 'sarangrana-dockerhub-user-token', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
-          sh '''
-          docker build . -t sarangrana/techchallengeapp:latest
-          docker login -u="${DOCKER_REGISTRY_USER}" -p="${DOCKER_REGISTRY_PWD}"
-          docker push {$DOCKER_REGISTRY_USER}/techchallengeapp:latest
-          '''
-          }
+         dockerImage = docker.build registry + ":latest"
+         docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+         }
         }
       }
     }
    stage('Remove Unused docker image & Folder') {
       steps{
         sh '''
-        docker rmi {$DOCKER_REGISTRY}/techchallengeapp:latest
+        docker rmi $registry:$latest
         rm -rf ../TechChallengeApp/
         '''
       }
