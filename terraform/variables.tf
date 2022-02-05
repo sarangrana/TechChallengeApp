@@ -1,11 +1,3 @@
-variable "aws_access_key" {
-  description = "AWS Access Key"
-}
-
-variable "aws_secret_key" {
-  description = "AWS Secret Key"
-}
-
 variable "project_name" {
   description = "To differentiate the resources based on project name"
   default     = "servian-tech-challenge"
