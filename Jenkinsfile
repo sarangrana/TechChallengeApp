@@ -2,14 +2,16 @@ pipeline {
   environment {
     AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-    imagename = "sarangrana/servian"
-    registryCredential = 'sarangrana-dockerhub'
+    DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
+    registryCredential = credentials('sarangrana-dockerhub-user-token')
+    imagename = '{$DOCKER_REGISTRY}/techchallengeapp:latest'
+    
     dockerImage = ''
   }
   agent any
 parameters {
         choice(
-            choices: ['Build-Infra' , 'Deployment'],
+            choices: ['Select', 'Build-Infra' , 'Deployment'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
@@ -69,11 +71,27 @@ parameters {
                 expression { params.REQUESTED_ACTION == 'Build-Infra' }
     }
     steps{
-        dir('terraform') {
-         sh "terraform destroy -auto-approve"
+       script {
+         sh '''
+         git clone https://github.com/servian/TechChallengeApp.git
+         cd TechChallengeApp/
+         ./build.sh
+         #TODO Database Setting Update
+         '''
         }
       }
     }
+  //  stage('Docker Build, Tag & Push') {
+  //     steps{
+  //      script {
+  //        sh '''
+  //        docker build . -t {$DOCKER_REGISTRY}/techchallengeapp:latest
+  //        docker login -u="${registryCredential.username}" -p="${registryCredential.password}"
+  //        docker push {$DOCKER_REGISTRY}/techchallengeapp:latest
+  //        '''
+  //       }
+  //     }
+  //   }
    stage('Building Docker Image') {
       steps{
         script {
@@ -91,11 +109,11 @@ parameters {
         }
       }
     }
-   stage('Remove Unused docker image') {
+   stage('Remove Unused docker image & Folder') {
       steps{
         sh "docker rmi $imagename:$BUILD_NUMBER"
-         sh "docker rmi $imagename:latest"
-
+        sh "docker rmi $imagename:latest"
+        sh "rm -rf ../TechChallengeApp/"
       }
    }
    stage('Deploy on Kubernetes') {
