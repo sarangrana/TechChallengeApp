@@ -83,6 +83,7 @@ parameters {
          git clone https://github.com/servian/TechChallengeApp.git
          cd TechChallengeApp/
          ./build.sh
+         sudo chmod 666 /var/run/docker.sock
          #TODO Database Setting Update
          '''
         }
