@@ -32,40 +32,40 @@ parameters {
          '''
       }
     }
-  // stage('Terraform Initialize') {
-  //   when {
-  //               expression { params.REQUESTED_ACTION == 'BuildInfra' }
-  //   }     
-  //   steps{
-  //       script {
-  //                sh "ls -la"
-  //                sh "pwd"
-  //                dir('terraform') {
-  //                   sh "terraform init"
-  //                }
-  //       }
-  //     }
-  //   }
-  // stage('Terraform Plan') {
-  //   when {
-  //               expression { params.REQUESTED_ACTION == 'BuildInfra' }
-  //   }  
-  //   steps{
-  //       dir('terraform') {
-  //        sh "terraform plan"
-  //       }
-  //     }
-  //   }
-  // stage('Terraform Apply') {
-  //   when {
-  //               expression { params.REQUESTED_ACTION == 'BuildInfra' }
-  //   }    
-  //   steps{
-  //       dir('terraform') {
-  //        sh "terraform apply -auto-approve"
-  //       }
-  //     }
-  //   }
+  stage('Terraform Initialize') {
+    when {
+                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+    }     
+    steps{
+        script {
+                 sh "ls -la"
+                 sh "pwd"
+                 dir('terraform') {
+                    sh "terraform init"
+                 }
+        }
+      }
+    }
+  stage('Terraform Plan') {
+    when {
+                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+    }  
+    steps{
+        dir('terraform') {
+         sh "terraform plan"
+        }
+      }
+    }
+  stage('Terraform Apply') {
+    when {
+                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+    }    
+    steps{
+        dir('terraform') {
+         sh "terraform apply -auto-approve"
+        }
+      }
+    }
   stage('Terraform Destroy') {
     when {
                 expression { params.REQUESTED_ACTION == 'BuildInfra' }
