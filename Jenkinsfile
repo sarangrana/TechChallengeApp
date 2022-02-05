@@ -88,39 +88,23 @@ parameters {
         }
       }
     }
-  //  stage('Docker Build, Tag & Push') {
-  //     steps{
-  //      script {
-  //        sh '''
-  //        docker build . -t {$DOCKER_REGISTRY}/techchallengeapp:latest
-  //        docker login -u="${registryCredential.username}" -p="${registryCredential.password}"
-  //        docker push {$DOCKER_REGISTRY}/techchallengeapp:latest
-  //        '''
-  //       }
-  //     }
-  //   }
-   stage('Building Docker Image') {
+   stage('Docker Build, Tag & Push') {
       steps{
-        script {
-          dockerImage = docker.build imagename
-        }
-      }
-    }
-   stage('Pushing Docker Image To Regitry') {
-      steps{
-        script {
-          docker.withRegistry( '', registryCredential ) {
-            dockerImage.push("$BUILD_NUMBER")
-             dockerImage.push('latest')
-          }
+       script {
+         sh '''
+         docker build . -t {$DOCKER_REGISTRY}/techchallengeapp:latest
+         docker login -u="${registryCredential.username}" -p="${registryCredential.password}"
+         docker push {$DOCKER_REGISTRY}/techchallengeapp:latest
+         '''
         }
       }
     }
    stage('Remove Unused docker image & Folder') {
       steps{
-        sh "docker rmi $imagename:$BUILD_NUMBER"
-        sh "docker rmi $imagename:latest"
-        sh "rm -rf ../TechChallengeApp/"
+        sh '''
+        docker rmi {$DOCKER_REGISTRY}/techchallengeapp:latest
+        rm -rf ../TechChallengeApp/
+        '''
       }
    }
    stage('Deploy on Kubernetes') {
