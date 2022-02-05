@@ -3,7 +3,6 @@ pipeline {
     AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
-    registryCredential = credentials('sarangrana-dockerhub-user-token')
     imagename = '{$DOCKER_REGISTRY}/techchallengeapp:latest'
     
     dockerImage = ''
@@ -93,7 +92,7 @@ parameters {
        script {
         withCredentials([usernamePassword(credentialsId: 'sarangrana-dockerhub-user-token', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
           sh '''
-          docker build . -t {$DOCKER_REGISTRY_USER}/techchallengeapp:latest
+          docker build . -t sarangrana/techchallengeapp:latest
           docker login -u="${DOCKER_REGISTRY_USER}" -p="${DOCKER_REGISTRY_PWD}"
           docker push {$DOCKER_REGISTRY_USER}/techchallengeapp:latest
           '''
