@@ -91,7 +91,7 @@ parameters {
    stage('Docker Build, Tag & Push') {
       steps{
        script {
-        withCredentials([usernamePassword(credentialsId: 'registryCredential', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
+        withCredentials([usernamePassword(credentialsId: 'sarangrana-dockerhub-user-token', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
           sh '''
           docker build . -t {$DOCKER_REGISTRY_USER}/techchallengeapp:latest
           docker login -u="${DOCKER_REGISTRY_USER}" -p="${DOCKER_REGISTRY_PWD}"
