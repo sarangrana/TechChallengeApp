@@ -92,8 +92,8 @@ parameters {
       steps{
        script {
          sh '''
-         docker build . -t {$DOCKER_REGISTRY}/techchallengeapp:latest
          docker login -u="${registryCredential.username}" -p="${registryCredential.password}"
+         docker build . -t {$DOCKER_REGISTRY}/techchallengeapp:latest
          docker push {$DOCKER_REGISTRY}/techchallengeapp:latest
          '''
         }
