@@ -2,6 +2,7 @@ pipeline {
   environment {
     AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+    postgre_db_password = credentials('postgre_db_password')
     DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
     imagename = '{$DOCKER_REGISTRY}/techchallengeapp:latest'
     registry = credentials('DOCKER_REGISTRY')
@@ -11,7 +12,7 @@ pipeline {
   agent any
 parameters {
         choice(
-            choices: ['Select', 'BuildInfra', 'DeleteInfra', 'DockerImage' , 'Deployment'],
+            choices: ['Select', 'BuildInfraAndDeploy', 'DeleteInfra', 'DockerImage'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
@@ -31,7 +32,7 @@ parameters {
     }
   stage('Terraform Initialize') {
     when {
-                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+                expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' }
     }     
     steps{
         script {
@@ -45,21 +46,23 @@ parameters {
     }
   stage('Terraform Plan') {
     when {
-                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+                expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' }
     }  
     steps{
         dir('terraform') {
-         sh "terraform plan"
+         sh "terraform plan -var="postgre_db_password={$postgre_db_password}""
         }
       }
     }
   stage('Terraform Apply') {
     when {
-                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+                expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' }
     }    
     steps{
         dir('terraform') {
-         sh "terraform apply -auto-approve"
+         sh "terraform apply -auto-approve -var="postgre_db_password={$postgre_db_password}""
+         sh "export EKS_CLUSTER=(terraform output eks_cluster_name)"
+         sh "echo {$EKS_CLUSTER}"
         }
       }
     }
@@ -73,50 +76,52 @@ parameters {
         }
       }
     }
-   stage('Build Go Application') {
-    when {
-                expression { params.REQUESTED_ACTION == 'DockerImage' }
-    }   
-    steps{
-       script {
-         sh '''
-         git clone https://github.com/servian/TechChallengeApp.git
-         cd TechChallengeApp/
-         ./build.sh
-         sudo chmod 666 /var/run/docker.sock
-         #TODO Database Setting Update
-         '''
-        }
-      }
-    }
-   stage('Docker Build, Tag & Push') {
-    when {
-                expression { params.REQUESTED_ACTION == 'DockerImage' }
-    }    
-    steps{
-       script {
-         dockerImage = docker.build registry + ":latest"
-         docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-         }
-        }
-      }
-    }
-   stage('Remove Unused docker image & Folder') {
-    when {
-                expression { params.REQUESTED_ACTION == 'DockerImage' }
-    }   
-    steps{
-        sh '''
-        docker rmi $registry:$latest
-        rm -rf ../TechChallengeApp/
-        '''
-      }
-   }
+  //  stage('Build Go Application') {
+  //   when {
+  //               expression { params.REQUESTED_ACTION == 'DockerImage' }
+  //   }   
+  //   steps{
+  //      script {
+  //        sh '''
+  //        git clone https://github.com/servian/TechChallengeApp.git
+  //        cd TechChallengeApp/
+  //        ./build.sh
+  //        sudo chmod 666 /var/run/docker.sock
+  //        #TODO Database Setting Update
+  //        '''
+  //       }
+  //     }
+  //   }
+  //  stage('Docker Build, Tag & Push') {
+  //   when {
+  //               expression { params.REQUESTED_ACTION == 'DockerImage' }
+  //   }    
+  //   steps{
+  //      script {
+  //        dockerImage = docker.build registry + ":latest"
+  //        docker.withRegistry( '', registryCredential ) {
+  //           dockerImage.push()
+  //        }
+  //       }
+  //     }
+  //   }
+  //  stage('Remove Unused docker image & Folder') {
+  //   when {
+  //               expression { params.REQUESTED_ACTION == 'DockerImage' }
+  //   }   
+  //   steps{
+  //       sh '''
+  //       docker rmi $registry:$latest
+  //       rm -rf ../TechChallengeApp/
+  //       '''
+  //     }
+  //  }
    stage('Deploy on Kubernetes') {
       steps{
-        script {
-          echo "Kubernetes Code will Come here"
+        dir('kubernetes') {
+         sh "aws eks update-kubeconfig --name servian-dev_eks_cluster"
+         sh "kubectl apply -f .\servian-app-deployment.yaml .\servian-app-service.yaml .\servian-app-secret.yaml"
+         sh "kubectl get deplyoment service pods -o wide"
         }
       }
     }

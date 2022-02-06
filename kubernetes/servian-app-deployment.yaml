@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servian-deployment
+  labels:
+    app: servianapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: servianapp
+  template:
+    metadata:
+      labels:
+        app: servianapp
+    spec:
+      containers:
+        - name: servianappcontainer
+          image: servian/techchallengeapp:latest
+          args: ["serve"]
+          envFrom:
+          - secretRef:
+              name: servian-secret
+          ports:
+          - name: port3000
+            containerPort: 3000
+            hostPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: port3000
+            initialDelaySeconds: 60
