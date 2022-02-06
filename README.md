@@ -24,6 +24,9 @@ This repository is created as a part of Servian Tech Challenge.
 
 ## 1. Architecture Diagram
 
+![image](https://user-images.githubusercontent.com/36162846/152697194-9cd719b5-f490-4415-8a81-79df2a75f5ef.png)
+
+
 ---
 
 ## 2. Tool Stack
