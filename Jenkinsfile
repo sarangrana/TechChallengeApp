@@ -62,7 +62,7 @@ parameters {
         dir('terraform') {
          sh "terraform apply -auto-approve -var='postgre_db_password={$postgre_db_password}'"
          sh 'terraform output eks_cluster_name > eks_cluster_name.txt'
-         eks_cluster_name = readFile('myfile.txt').trim()
+         script { eks_cluster_name = readFile('myfile.txt').trim() }
         }
       }
     }
