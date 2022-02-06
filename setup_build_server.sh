@@ -30,3 +30,4 @@ aws --version
 # sudo chmod +x ./kubectl
 # sudo mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
 # kubectl version --short --client
+
