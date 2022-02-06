@@ -32,7 +32,7 @@ parameters {
     }
   stage('Terraform Initialize') {
     when {
-                expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' }
+                expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' || params.REQUESTED_ACTION == 'DeleteInfra'}
     }     
     steps{
         script {
