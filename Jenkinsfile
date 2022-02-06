@@ -12,7 +12,7 @@ pipeline {
   agent any
 parameters {
         choice(
-            choices: ['Select', 'BuildInfraAndDeploy', 'DeleteInfra', 'DockerImage'],
+            choices: ['BuildInfraAndDeploy', 'DeleteInfra', 'DockerImage'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
@@ -25,8 +25,8 @@ parameters {
                  pwd
                  aws configure set aws_access_key_id={$AWS_ACCESS_KEY_ID} aws_secret_access_key={$AWS_SECRET_ACCESS_KEY}
                  aws s3 ls
-                 chmod 777 setup_build_server.sh
-                 ./setup_build_server.sh --update
+                 #chmod 777 setup_build_server.sh
+                 #./setup_build_server.sh
          '''
       }
     }
@@ -117,7 +117,10 @@ parameters {
   //     }
   //  }
    stage('Deploy on Kubernetes') {
-      steps{
+    when {
+                expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' }
+    }  
+    steps{
         dir('kubernetes') {
          sh "aws eks update-kubeconfig --name servian-dev_eks_cluster --region us-east-2"
          sh "curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl"
