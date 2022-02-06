@@ -88,46 +88,6 @@ parameters {
         }
       }
     }
-  //  stage('Build Go Application') {
-  //   when {
-  //               expression { params.REQUESTED_ACTION == 'DockerImage' }
-  //   }   
-  //   steps{
-  //      script {
-  //        sh '''
-  //        git clone https://github.com/servian/TechChallengeApp.git
-  //        cd TechChallengeApp/
-  //        ./build.sh
-  //        sudo chmod 666 /var/run/docker.sock
-  //        #TODO Database Setting Update
-  //        '''
-  //       }
-  //     }
-  //   }
-  //  stage('Docker Build, Tag & Push') {
-  //   when {
-  //               expression { params.REQUESTED_ACTION == 'DockerImage' }
-  //   }    
-  //   steps{
-  //      script {
-  //        dockerImage = docker.build registry + ":latest"
-  //        docker.withRegistry( '', registryCredential ) {
-  //           dockerImage.push()
-  //        }
-  //       }
-  //     }
-  //   }
-  //  stage('Remove Unused docker image & Folder') {
-  //   when {
-  //               expression { params.REQUESTED_ACTION == 'DockerImage' }
-  //   }   
-  //   steps{
-  //       sh '''
-  //       docker rmi $registry:$latest
-  //       rm -rf ../TechChallengeApp/
-  //       '''
-  //     }
-  //  }
    stage('Deploy on Kubernetes') {
     when {
                 expression { params.REQUESTED_ACTION == 'BuildInfraAndDeploy' }
