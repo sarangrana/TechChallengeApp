@@ -50,7 +50,9 @@ parameters {
     }  
     steps{
         dir('terraform') {
-         sh "terraform plan -var='postgre_db_password={$postgre_db_password}'"
+         withCredentials([string(credentialsId: 'postgre_db_password', variable: 'VAR_POSTGRE_DB_PASSWORD')]) {
+         sh "terraform plan -var='postgre_db_password={$VAR_POSTGRE_DB_PASSWORD}'"
+         }
         }
       }
     }
@@ -60,9 +62,11 @@ parameters {
     }    
     steps{
         dir('terraform') {
-         sh "terraform apply -auto-approve -var='postgre_db_password={$postgre_db_password}'"
+         withCredentials([string(credentialsId: 'postgre_db_password', variable: 'VAR_POSTGRE_DB_PASSWORD')]) {
+         sh "terraform apply -auto-approve -var='postgre_db_password={$VAR_POSTGRE_DB_PASSWORD}'"
          sh 'terraform output eks_cluster_name > eks_cluster_name.txt'
          script { eks_cluster_name = readFile('eks_cluster_name.txt').trim() }
+         }
         }
       }
     }
@@ -127,7 +131,7 @@ parameters {
          sh "curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl"
          sh "chmod +x ./kubectl"
          sh "./kubectl apply -f servian-app-secret.yaml -f servian-app-deployment.yaml -f servian-app-service.yaml"
-         sh "./kubectl get deplyoment service pods -o wide"
+         sh "./kubectl get deployment service pods -o wide"
         }
       }
     }
