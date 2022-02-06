@@ -43,3 +43,8 @@ output "rds_password" {
   value       = aws_db_instance.postgres.password
   sensitive   = true
 }
+
+output "rds_dbname" {
+  description = "RDS instance DB name"
+  value       = aws_db_instance.postgres.name
+}

@@ -162,7 +162,7 @@ resource "aws_db_instance" "postgres" {
   allocated_storage      = 5
   engine                 = "postgres"
   engine_version         = "13.1"
-  username               = "servian"
+  username               = "postgres"
   password               = var.postgre_db_password
   db_subnet_group_name   = aws_db_subnet_group.postgres_db_subnet_group.name
   vpc_security_group_ids = [aws_security_group.sg-rds.id]
