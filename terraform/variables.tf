@@ -35,7 +35,6 @@ variable "postgre_db_version" {
 
 variable "postgre_db_password" {
   description = "PostgreSQL Database password"
-  default     = "12345678"
   sensitive   = true
 }
 
