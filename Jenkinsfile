@@ -80,7 +80,11 @@ parameters {
     }    
     steps{
         dir('terraform') {
-         sh "terraform destroy -auto-approve"
+         withCredentials([string(credentialsId: 'postgre_db_password', variable: 'VAR_POSTGRE_DB_PASSWORD')]) {
+         sh '''
+         terraform destroy -auto-approve -var='postgre_db_password={$postgre_db_password}'
+         '''
+         }
         }
       }
     }
