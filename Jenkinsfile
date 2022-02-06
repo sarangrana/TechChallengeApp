@@ -7,7 +7,7 @@ pipeline {
     imagename = '{$DOCKER_REGISTRY}/techchallengeapp:latest'
     registry = credentials('DOCKER_REGISTRY')
     registryCredential = credentials('sarangrana-dockerhub-user-token')
-    dockerImage = ''
+    eks_cluster_name = ''
   }
   agent any
 parameters {
@@ -61,7 +61,8 @@ parameters {
     steps{
         dir('terraform') {
          sh "terraform apply -auto-approve -var='postgre_db_password={$postgre_db_password}'"
-         sh "export EKS_CLUSTER=\$(terraform output eks_cluster_name)"
+         sh 'terraform output eks_cluster_name > eks_cluster_name.txt'
+         eks_cluster_name = readFile('myfile.txt').trim()
         }
       }
     }
@@ -121,8 +122,8 @@ parameters {
     }  
     steps{
         dir('kubernetes') {
-         sh "echo \$EKS_CLUSTER"
-         sh "aws eks update-kubeconfig --name \$EKS_CLUSTER --region us-east-2"
+         sh "echo ${eks_cluster_name}"
+         sh "aws eks update-kubeconfig --name ${eks_cluster_name} --region us-east-2"
          sh "curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl"
          sh "chmod +x ./kubectl"
          sh "./kubectl apply -f servian-app-secret.yaml -f servian-app-deployment.yaml -f servian-app-service.yaml"
