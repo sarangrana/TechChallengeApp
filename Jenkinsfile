@@ -61,8 +61,6 @@ parameters {
     steps{
         dir('terraform') {
          sh "terraform apply -auto-approve -var='postgre_db_password={$postgre_db_password}'"
-         sh "export EKS_CLUSTER=$(terraform output eks_cluster_name)"
-         sh "echo $EKS_CLUSTER"
         }
       }
     }
@@ -122,6 +120,8 @@ parameters {
     }  
     steps{
         dir('kubernetes') {
+         sh "export EKS_CLUSTER=$(terraform output eks_cluster_name)"
+         sh "echo $EKS_CLUSTER"
          sh "aws eks update-kubeconfig --name $EKS_CLUSTER --region us-east-2"
          sh "curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl"
          sh "chmod +x ./kubectl"
