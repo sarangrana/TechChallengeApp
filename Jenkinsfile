@@ -11,7 +11,7 @@ pipeline {
   agent any
 parameters {
         choice(
-            choices: ['Select', 'BuildInfra', 'DockerImage' , 'Deployment'],
+            choices: ['Select', 'BuildInfra', 'DeleteInfra', 'DockerImage' , 'Deployment'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
@@ -65,7 +65,7 @@ parameters {
     }
   stage('Terraform Destroy') {
     when {
-                expression { params.REQUESTED_ACTION == 'BuildInfra' }
+                expression { params.REQUESTED_ACTION == 'DeleteInfra' }
     }    
     steps{
         dir('terraform') {
