@@ -61,8 +61,8 @@ parameters {
     steps{
         dir('terraform') {
          sh "terraform apply -auto-approve -var='postgre_db_password={$postgre_db_password}'"
-         sh "export EKS_CLUSTER=$(terraform output eks_cluster_name)"
-         sh "echo $EKS_CLUSTER"
+         sh "export EKS_CLUSTER={$(terraform output eks_cluster_name)}"
+         sh "echo {$EKS_CLUSTER}"
         }
       }
     }
