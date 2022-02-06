@@ -99,7 +99,7 @@ Jenkins Job : [Jenkins Job Master](http://ec2-18-219-201-252.us-east-2.compute.a
 
 Jenkins Build Pipeline : [Jenkins Infra Creation Pipeline](http://ec2-18-219-201-252.us-east-2.compute.amazonaws.com:8080/job/servian-cd-pipeline-techchallengeapp-main/1/console)
 
-Jenkins Pipeline To Destory Infra : [Jenkins Infra Deletion Pipeline](http://ec2-18-219-201-252.us-east-2.compute.amazonaws.com:8080/job/servian-cd-pipeline-techchallengeapp-main/)
+Jenkins Pipeline To Destory Infra : [Jenkins Infra Deletion Pipeline](http://ec2-18-219-201-252.us-east-2.compute.amazonaws.com:8080/job/servian-cd-pipeline-techchallengeapp-main/3/console)
 ### Terraform
 
 For the infra creation i have used terraform as config management tool. Terraform can be used with multi cloud deployment and have good documentation for most of the resource type.
