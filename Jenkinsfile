@@ -51,7 +51,9 @@ parameters {
     steps{
         dir('terraform') {
          withCredentials([string(credentialsId: 'postgre_db_password', variable: 'VAR_POSTGRE_DB_PASSWORD')]) {
-         sh "terraform plan -var='postgre_db_password={$VAR_POSTGRE_DB_PASSWORD}'"
+         sh '''
+         terraform plan -var='postgre_db_password={$VAR_POSTGRE_DB_PASSWORD}'
+         '''
          }
         }
       }
@@ -63,8 +65,10 @@ parameters {
     steps{
         dir('terraform') {
          withCredentials([string(credentialsId: 'postgre_db_password', variable: 'VAR_POSTGRE_DB_PASSWORD')]) {
-         sh "terraform apply -auto-approve -var='postgre_db_password={$VAR_POSTGRE_DB_PASSWORD}'"
-         sh 'terraform output eks_cluster_name > eks_cluster_name.txt'
+         sh '''
+         terraform apply -auto-approve -var='postgre_db_password={$VAR_POSTGRE_DB_PASSWORD}'
+         terraform output eks_cluster_name > eks_cluster_name.txt
+         '''
          script { eks_cluster_name = readFile('eks_cluster_name.txt').trim() }
          }
         }
