@@ -12,7 +12,7 @@ pipeline {
   agent any
 parameters {
         choice(
-            choices: ['BuildInfraAndDeploy', 'DeleteInfra', 'DockerImage'],
+            choices: ['BuildInfraAndDeploy', 'DeleteInfra'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
