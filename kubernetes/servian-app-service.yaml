@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     app: servianapp
-  name: servian-deployment
+  name: servian-service
 spec:
   ports:
   - port: 3000
