@@ -11,15 +11,12 @@ pipeline {
   agent any
 parameters {
         choice(
-            choices: ['Select', 'BuildInfra' , 'Deployment'],
+            choices: ['Select', 'BuildInfra', 'DockerImage' , 'Deployment'],
             description: 'For the first time you should select Build-Infra to create infrastructure,later on this pipeline should be used for deployment of application',
             name: 'REQUESTED_ACTION')
   }
   stages {
   stage('Pre-Requisits') {
-    when {
-                expression { params.REQUESTED_ACTION == 'BuildInfra' }
-    }
     steps {
          sh '''#!/bin/bash
                  whoami
@@ -77,6 +74,9 @@ parameters {
       }
     }
    stage('Build Go Application') {
+    when {
+                expression { params.REQUESTED_ACTION == 'DockerImage' }
+    }   
     steps{
        script {
          sh '''
@@ -90,7 +90,10 @@ parameters {
       }
     }
    stage('Docker Build, Tag & Push') {
-      steps{
+    when {
+                expression { params.REQUESTED_ACTION == 'DockerImage' }
+    }    
+    steps{
        script {
          dockerImage = docker.build registry + ":latest"
          docker.withRegistry( '', registryCredential ) {
@@ -100,7 +103,10 @@ parameters {
       }
     }
    stage('Remove Unused docker image & Folder') {
-      steps{
+    when {
+                expression { params.REQUESTED_ACTION == 'DockerImage' }
+    }   
+    steps{
         sh '''
         docker rmi $registry:$latest
         rm -rf ../TechChallengeApp/
