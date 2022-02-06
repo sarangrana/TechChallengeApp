@@ -120,8 +120,10 @@ parameters {
       steps{
         dir('kubernetes') {
          sh "aws eks update-kubeconfig --name servian-dev_eks_cluster"
-         sh "kubectl apply -f ./servian-app-deployment.yaml ./servian-app-service.yaml ./servian-app-secret.yaml"
-         sh "kubectl get deplyoment service pods -o wide"
+         sh "curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl"
+         sh "chmod +x ./kubectl"
+         sh "./kubectl apply -f ./servian-app-deployment.yaml ./servian-app-service.yaml ./servian-app-secret.yaml"
+         sh "./kubectl get deplyoment service pods -o wide"
         }
       }
     }
