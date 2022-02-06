@@ -120,7 +120,7 @@ parameters {
       steps{
         dir('kubernetes') {
          sh "aws eks update-kubeconfig --name servian-dev_eks_cluster"
-         sh "kubectl apply -f .\servian-app-deployment.yaml .\servian-app-service.yaml .\servian-app-secret.yaml"
+         sh "kubectl apply -f ./servian-app-deployment.yaml ./servian-app-service.yaml ./servian-app-secret.yaml"
          sh "kubectl get deplyoment service pods -o wide"
         }
       }
